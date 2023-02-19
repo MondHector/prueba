@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.313">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Hëctor Mondragón">
+
+<title>Regresión logística</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="index_files/libs/clipboard/clipboard.min.js"></script>
+<script src="index_files/libs/quarto-html/quarto.js"></script>
+<script src="index_files/libs/quarto-html/popper.min.js"></script>
+<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="index_files/libs/quarto-html/anchor.min.js"></script>
+<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="index_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Regresión logística</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Hëctor Mondragón </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>##Replicación del artículo de Cruz Schneider</p>
+<p>En esta entrada se hace una replicación del artículo…</p>
+<section id="descargar-datos" class="level3">
+<h3 class="anchored" data-anchor-id="descargar-datos">Descargar datos</h3>
+<p>Primero se instalan las librerías que se usarán.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(MASS, tidyverse, haven, sandwich, lmtest, stargazer)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Recopilamos los datos del dataverse de la universidad de Harvard</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>db<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="fu">read_dta</span>(<span class="st">"ajps_data.dta"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="replicamos-la-primera-tabla" class="level3">
+<h3 class="anchored" data-anchor-id="replicamos-la-primera-tabla">Replicamos la primera tabla</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>modelo1<span class="ot">&lt;-</span><span class="fu">glm</span>(rel_07 <span class="sc">~</span> <span class="fu">as.factor</span>(kc_phase1) <span class="sc">+</span> <span class="fu">as.factor</span>(provincename),</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">family=</span><span class="fu">binomial</span>(<span class="at">link=</span><span class="st">"logit"</span>), <span class="at">data=</span>db,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">subset =</span> <span class="sc">!</span><span class="fu">is.na</span>(prov_geocode))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(modelo1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+z test of coefficients:
+
+                                             Estimate Std. Error z value
+(Intercept)                                  1.361512   0.499387  2.7264
+as.factor(kc_phase1)1                        0.556984   0.214000  2.6027
+as.factor(provincename)AGUSAN DEL NORTE     -0.387375   0.835318 -0.4637
+as.factor(provincename)AGUSAN DEL SUR       -0.140358   0.818871 -0.1714
+as.factor(provincename)ALBAY                -0.960187   0.691795 -1.3880
+as.factor(provincename)BILIRAN              -2.089631   0.891910 -2.3429
+as.factor(provincename)BOHOL                -0.981630   0.582544 -1.6851
+as.factor(provincename)CAMARINES NORTE      -0.387375   0.835318 -0.4637
+as.factor(provincename)CAMARINES SUR        -1.645218   0.599662 -2.7436
+as.factor(provincename)CAMIGUIN            -17.051039 645.847861 -0.0264
+as.factor(provincename)CAPIZ                -1.371809   0.699066 -1.9623
+as.factor(provincename)CATANDUANES          -2.453453   0.844099 -2.9066
+as.factor(provincename)COMPOSTELA VALLEY    -0.895923   0.803434 -1.1151
+as.factor(provincename)DAVAO DEL NORTE      -1.748756   0.790698 -2.2117
+as.factor(provincename)DAVAO ORIENTAL       -0.895923   0.803434 -1.1151
+as.factor(provincename)EASTERN SAMAR        -1.239320   0.654982 -1.8921
+as.factor(provincename)IFUGAO               -3.842347   1.165578 -3.2965
+as.factor(provincename)MARINDUQUE           -1.811657   0.918167 -1.9731
+as.factor(provincename)MISAMIS OCCIDENTAL    0.571235   0.904142  0.6318
+as.factor(provincename)MOUNTAIN PROVINCE    -1.882064   0.819254 -2.2973
+as.factor(provincename)NEGROS OCCIDENTAL    -1.303790   0.612634 -2.1282
+as.factor(provincename)NORTH COTABATO       -0.782383   0.708327 -1.1045
+as.factor(provincename)NORTHERN SAMAR       -0.518196   0.693540 -0.7472
+as.factor(provincename)OCCIDENTAL MINDORO   -1.277082   0.787164 -1.6224
+as.factor(provincename)ORIENTAL MINDORO     -1.606719   0.721363 -2.2273
+as.factor(provincename)QUEZON               -1.586893   0.592452 -2.6785
+as.factor(provincename)ROMBLON              -2.218850   0.710186 -3.1243
+as.factor(provincename)SAMAR                -0.057892   0.706259 -0.0820
+as.factor(provincename)SARANGANI PROVINCE   -1.227288   0.917555 -1.3376
+as.factor(provincename)SIQUIJOR             14.030970 588.245627  0.0239
+as.factor(provincename)SORSOGON             -1.336395   0.721202 -1.8530
+as.factor(provincename)SOUTH COTABATO        0.168894   0.922811  0.1830
+as.factor(provincename)SULTAN KUDARAT       -0.753254   0.791811 -0.9513
+as.factor(provincename)SURIGAO DEL NORTE    -2.427595   0.670974 -3.6180
+as.factor(provincename)SURIGAO DEL SUR      -0.387375   0.719943 -0.5381
+as.factor(provincename)ZAMBOANGA DEL NORTE  -0.217654   0.681840 -0.3192
+as.factor(provincename)ZAMBOANGA DEL SUR    -0.184943   0.680425 -0.2718
+as.factor(provincename)ZAMBOANGA SIBUGAY    -0.700705   0.737149 -0.9506
+                                            Pr(&gt;|z|)    
+(Intercept)                                0.0064036 ** 
+as.factor(kc_phase1)1                      0.0092485 ** 
+as.factor(provincename)AGUSAN DEL NORTE    0.6428298    
+as.factor(provincename)AGUSAN DEL SUR      0.8639060    
+as.factor(provincename)ALBAY               0.1651479    
+as.factor(provincename)BILIRAN             0.0191359 *  
+as.factor(provincename)BOHOL               0.0919741 .  
+as.factor(provincename)CAMARINES NORTE     0.6428298    
+as.factor(provincename)CAMARINES SUR       0.0060774 ** 
+as.factor(provincename)CAMIGUIN            0.9789375    
+as.factor(provincename)CAPIZ               0.0497222 *  
+as.factor(provincename)CATANDUANES         0.0036539 ** 
+as.factor(provincename)COMPOSTELA VALLEY   0.2648002    
+as.factor(provincename)DAVAO DEL NORTE     0.0269901 *  
+as.factor(provincename)DAVAO ORIENTAL      0.2648002    
+as.factor(provincename)EASTERN SAMAR       0.0584720 .  
+as.factor(provincename)IFUGAO              0.0009789 ***
+as.factor(provincename)MARINDUQUE          0.0484814 *  
+as.factor(provincename)MISAMIS OCCIDENTAL  0.5275193    
+as.factor(provincename)MOUNTAIN PROVINCE   0.0216022 *  
+as.factor(provincename)NEGROS OCCIDENTAL   0.0333228 *  
+as.factor(provincename)NORTH COTABATO      0.2693546    
+as.factor(provincename)NORTHERN SAMAR      0.4549577    
+as.factor(provincename)OCCIDENTAL MINDORO  0.1047210    
+as.factor(provincename)ORIENTAL MINDORO    0.0259248 *  
+as.factor(provincename)QUEZON              0.0073949 ** 
+as.factor(provincename)ROMBLON             0.0017821 ** 
+as.factor(provincename)SAMAR               0.9346706    
+as.factor(provincename)SARANGANI PROVINCE  0.1810390    
+as.factor(provincename)SIQUIJOR            0.9809705    
+as.factor(provincename)SORSOGON            0.0638807 .  
+as.factor(provincename)SOUTH COTABATO      0.8547814    
+as.factor(provincename)SULTAN KUDARAT      0.3414490    
+as.factor(provincename)SURIGAO DEL NORTE   0.0002969 ***
+as.factor(provincename)SURIGAO DEL SUR     0.5905327    
+as.factor(provincename)ZAMBOANGA DEL NORTE 0.7495629    
+as.factor(provincename)ZAMBOANGA DEL SUR   0.7857715    
+as.factor(provincename)ZAMBOANGA SIBUGAY   0.3418277    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>´ La variable provincename excluye ciertas provincias por lo que no es la ideal.</p>
+<p>Por tanto creamos la variable</p>
+<p>Primero el vector con nombres de provincias.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Modelo 1, todas las provincias</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>vector_nombre_provs1<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">"kc_phase1"</span>, <span class="fu">paste</span>(<span class="st">"provs"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">27</span>, <span class="at">sep=</span><span class="st">""</span>),</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">"provs"</span>, <span class="dv">29</span><span class="sc">:</span><span class="dv">41</span>, <span class="at">sep=</span><span class="st">""</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>dep_var<span class="ot">&lt;-</span><span class="st">"rel_07"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Y con los vectores anteriores construimos la fórmula</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>formula1 <span class="ot">&lt;-</span> <span class="fu">as.formula</span>(<span class="fu">paste</span>(dep_var,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(vector_nombre_provs1, <span class="at">collapse=</span> <span class="st">"+"</span>), <span class="at">sep=</span><span class="st">"~"</span>))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>formula1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>rel_07 ~ kc_phase1 + provs1 + provs2 + provs3 + provs4 + provs5 + 
+    provs6 + provs7 + provs8 + provs9 + provs10 + provs11 + provs12 + 
+    provs13 + provs14 + provs15 + provs16 + provs17 + provs18 + 
+    provs19 + provs20 + provs21 + provs22 + provs23 + provs24 + 
+    provs25 + provs26 + provs27 + provs29 + provs30 + provs31 + 
+    provs32 + provs33 + provs34 + provs35 + provs36 + provs37 + 
+    provs38 + provs39 + provs40 + provs41</code></pre>
+</div>
+</div>
+<p>Con esa información construimos el modelo correcto. incluimos los datos para los cuales la variable de geolocalización existe.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>modelo1<span class="ot">&lt;-</span><span class="fu">glm</span>(formula1,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">family=</span><span class="fu">binomial</span>(<span class="at">link=</span><span class="st">"logit"</span>),</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">data=</span>db,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">subset=</span> <span class="sc">!</span><span class="fu">is.na</span>(prov_geocode))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="resultados" class="level3">
+<h3 class="anchored" data-anchor-id="resultados">Resultados</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Ver resultados</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = formula1, family = binomial(link = "logit"), data = db, 
+    subset = !is.na(prov_geocode))
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-2.0997  -1.0833   0.6639   0.9433   2.2633  
+
+Coefficients: (4 not defined because of singularities)
+             Estimate Std. Error z value Pr(&gt;|z|)   
+(Intercept)  -0.24521    0.52249  -0.469  0.63885   
+kc_phase1     0.55698    0.21400   2.603  0.00925 **
+provs1        1.60672    0.72136   2.227  0.02592 * 
+provs2        1.21934    0.84840   1.437  0.15066   
+provs3        1.46636    0.83191   1.763  0.07796 . 
+provs4        0.64653    0.70736   0.914  0.36071   
+provs5       -0.48291    0.90326  -0.535  0.59290   
+provs6        0.62509    0.60101   1.040  0.29831   
+provs7        1.21934    0.84840   1.437  0.15066   
+provs8       -0.03850    0.61763  -0.062  0.95030   
+provs9      -15.44432  645.84788  -0.024  0.98092   
+provs10       0.23491    0.71451   0.329  0.74233   
+provs11      -0.84673    0.85696  -0.988  0.32312   
+provs12       0.71080    0.81724   0.870  0.38444   
+provs13      -0.14204    0.80365  -0.177  0.85971   
+provs14       0.71080    0.81724   0.870  0.38444   
+provs15       0.36740    0.67133   0.547  0.58419   
+provs16      -2.23563    1.17440  -1.904  0.05696 . 
+provs17            NA         NA      NA       NA   
+provs18            NA         NA      NA       NA   
+provs19            NA         NA      NA       NA   
+provs20      -0.20494    0.92966  -0.220  0.82553   
+provs21            NA         NA      NA       NA   
+provs22       2.17795    0.91658   2.376  0.01749 * 
+provs23      -0.27534    0.83252  -0.331  0.74084   
+provs24       0.30293    0.63088   0.480  0.63111   
+provs25       0.82434    0.72377   1.139  0.25473   
+provs26       1.08852    0.70911   1.535  0.12477   
+provs27       0.32964    0.80118   0.411  0.68075   
+provs29       0.01983    0.61060   0.032  0.97410   
+provs30      -0.61213    0.72491  -0.844  0.39843   
+provs31       1.54883    0.72165   2.146  0.03186 * 
+provs32       0.37943    0.92920   0.408  0.68302   
+provs33      15.63769  588.24565   0.027  0.97879   
+provs34       0.27032    0.73637   0.367  0.71354   
+provs35       1.77561    0.93501   1.899  0.05756 . 
+provs36       0.85346    0.80590   1.059  0.28959   
+provs37      -0.82088    0.68697  -1.195  0.23212   
+provs38       1.21934    0.73509   1.659  0.09716 . 
+provs39       1.38906    0.69797   1.990  0.04657 * 
+provs40       1.42178    0.69646   2.041  0.04121 * 
+provs41       0.90601    0.75189   1.205  0.22821   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 890.21  on 660  degrees of freedom
+Residual deviance: 783.17  on 623  degrees of freedom
+  (12 observations deleted due to missingness)
+AIC: 859.17
+
+Number of Fisher Scoring iterations: 14</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Ver Odds Ratio</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>exp1<span class="ot">&lt;-</span><span class="fu">exp</span>(<span class="fu">coef</span>(modelo1))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="do">## esto es lo que reportan en el artículo.</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Ver pruebas de hipótesis con errores robustos por cluster agregados</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(modelo1, <span class="at">vcov =</span> vcovCL, <span class="at">cluster=</span><span class="sc">~</span>prov_geocode)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+z test of coefficients:
+
+               Estimate  Std. Error   z value  Pr(&gt;|z|)    
+(Intercept) -2.4521e-01  4.8918e-02   -5.0126 5.369e-07 ***
+kc_phase1    5.5698e-01  2.4640e-01    2.2605 0.0237905 *  
+provs1       1.6067e+00  2.1540e-02   74.5928 &lt; 2.2e-16 ***
+provs2       1.2193e+00  4.3535e-04 2800.8269 &lt; 2.2e-16 ***
+provs3       1.4664e+00  1.5168e-02   96.6720 &lt; 2.2e-16 ***
+provs4       6.4653e-01  7.6399e-03   84.6255 &lt; 2.2e-16 ***
+provs5      -4.8291e-01  5.0651e-02   -9.5341 &lt; 2.2e-16 ***
+provs6       6.2509e-01  4.9135e-03  127.2189 &lt; 2.2e-16 ***
+provs7       1.2193e+00  4.3535e-04 2800.8269 &lt; 2.2e-16 ***
+provs8      -3.8499e-02  4.4180e-03   -8.7141 &lt; 2.2e-16 ***
+provs9      -1.5444e+01  1.0145e+00  -15.2233 &lt; 2.2e-16 ***
+provs10      2.3491e-01  5.8517e-03   40.1440 &lt; 2.2e-16 ***
+provs11     -8.4673e-01  4.2502e-03 -199.2196 &lt; 2.2e-16 ***
+provs12      7.1080e-01  1.0894e-02   65.2471 &lt; 2.2e-16 ***
+provs13     -1.4204e-01  4.2403e-02   -3.3497 0.0008090 ***
+provs14      7.1080e-01  1.0894e-02   65.2471 &lt; 2.2e-16 ***
+provs15      3.6740e-01  1.0298e-02   35.6755 &lt; 2.2e-16 ***
+provs16     -2.2356e+00  4.2046e-02  -53.1705 &lt; 2.2e-16 ***
+provs20     -2.0494e-01  2.3889e-02   -8.5789 &lt; 2.2e-16 ***
+provs22      2.1780e+00  1.9193e-02  113.4785 &lt; 2.2e-16 ***
+provs23     -2.7534e-01  3.0427e-03  -90.4937 &lt; 2.2e-16 ***
+provs24      3.0293e-01  2.0518e-02   14.7644 &lt; 2.2e-16 ***
+provs25      8.2434e-01  3.1078e-03  265.2508 &lt; 2.2e-16 ***
+provs26      1.0885e+00  5.4119e-03  201.1357 &lt; 2.2e-16 ***
+provs27      3.2964e-01  7.6453e-03   43.1161 &lt; 2.2e-16 ***
+provs29      1.9826e-02  5.8933e-03    3.3642 0.0007677 ***
+provs30     -6.1213e-01  2.7494e-02  -22.2642 &lt; 2.2e-16 ***
+provs31      1.5488e+00  1.2370e-03 1252.0707 &lt; 2.2e-16 ***
+provs32      3.7943e-01  1.5957e-02   23.7781 &lt; 2.2e-16 ***
+provs33      1.5638e+01  1.0142e+00   15.4187 &lt; 2.2e-16 ***
+provs34      2.7032e-01  2.8432e-03   95.0779 &lt; 2.2e-16 ***
+provs35      1.7756e+00  1.9762e-02   89.8507 &lt; 2.2e-16 ***
+provs36      8.5346e-01  1.5153e-02   56.3232 &lt; 2.2e-16 ***
+provs37     -8.2088e-01  9.0528e-03  -90.6769 &lt; 2.2e-16 ***
+provs38      1.2193e+00  4.3535e-04 2800.8269 &lt; 2.2e-16 ***
+provs39      1.3891e+00  7.2488e-03  191.6262 &lt; 2.2e-16 ***
+provs40      1.4218e+00  1.8522e-03  767.6080 &lt; 2.2e-16 ***
+provs41      9.0601e-01  2.1616e-03  419.1417 &lt; 2.2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Matriz de varianza covarianza</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>matriz<span class="ot">&lt;-</span><span class="fu">vcovCL</span>(modelo1, <span class="at">type=</span><span class="st">"HC0"</span>, <span class="at">cluster=</span><span class="sc">~</span>prov_geocode)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Errores</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>robust_se1<span class="ot">&lt;-</span><span class="fu">sqrt</span>(<span class="fu">diag</span>(matriz))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="imprimir-tabla" class="level3">
+<h3 class="anchored" data-anchor-id="imprimir-tabla">Imprimir tabla</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(modelo1, modelo1, <span class="at">apply.coef=</span>exp, <span class="at">type =</span> <span class="st">"text"</span>,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="at">se =</span> <span class="fu">list</span>(<span class="cn">NULL</span>, robust_se1), <span class="at">omit=</span><span class="st">"provs"</span>, <span class="at">omit.labels =</span> <span class="st">"Province FE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+==============================================
+                      Dependent variable:     
+                  ----------------------------
+                             rel_07           
+                       (1)            (2)     
+----------------------------------------------
+kc_phase1            1.745***      1.745***   
+                     (0.214)        (0.246)   
+                                              
+Constant              0.783        0.783***   
+                     (0.522)        (0.049)   
+                                              
+----------------------------------------------
+Province FE            Yes            Yes     
+----------------------------------------------
+Observations           661            661     
+Log Likelihood       -391.585      -391.585   
+Akaike Inf. Crit.    859.169        859.169   
+==============================================
+Note:              *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+</section>
+<section id="modelo-2" class="level3">
+<h3 class="anchored" data-anchor-id="modelo-2">Modelo 2</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Replicar y ajustar para modelos 2 </span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>controles2<span class="ot">&lt;-</span><span class="fu">c</span>(vector_nombre_provs1, <span class="st">"poverty_nscb"</span>,<span class="st">"log_pop"</span>,<span class="st">"as.factor(urban)"</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="st">"tax_growth_avg_3yr"</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>formula2 <span class="ot">&lt;-</span> <span class="fu">as.formula</span>(<span class="fu">paste</span>(dep_var, <span class="fu">paste</span>(controles2, <span class="at">collapse=</span> <span class="st">"+"</span>), <span class="at">sep=</span><span class="st">"~"</span>))</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>formula2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>rel_07 ~ kc_phase1 + provs1 + provs2 + provs3 + provs4 + provs5 + 
+    provs6 + provs7 + provs8 + provs9 + provs10 + provs11 + provs12 + 
+    provs13 + provs14 + provs15 + provs16 + provs17 + provs18 + 
+    provs19 + provs20 + provs21 + provs22 + provs23 + provs24 + 
+    provs25 + provs26 + provs27 + provs29 + provs30 + provs31 + 
+    provs32 + provs33 + provs34 + provs35 + provs36 + provs37 + 
+    provs38 + provs39 + provs40 + provs41 + poverty_nscb + log_pop + 
+    as.factor(urban) + tax_growth_avg_3yr</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>modelo2<span class="ot">&lt;-</span><span class="fu">glm</span>(formula2, <span class="at">family=</span><span class="fu">binomial</span>(<span class="at">link=</span><span class="st">"logit"</span>), <span class="at">data=</span>db,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="at">subset=</span> <span class="sc">!</span><span class="fu">is.na</span>(prov_geocode))</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co">#errores</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>robust_se2<span class="ot">&lt;-</span><span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovCL</span>(modelo2, <span class="at">type=</span><span class="st">"HC0"</span>, <span class="at">cluster=</span><span class="sc">~</span>prov_geocode)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="modelo-3" class="level3">
+<h3 class="anchored" data-anchor-id="modelo-3">Modelo 3</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>controles3<span class="ot">&lt;-</span><span class="fu">c</span>(controles2, <span class="st">"as.factor(term3_04)"</span>,<span class="st">"contenders_07"</span>, <span class="st">"as.factor(dynasty_04)"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>formula3<span class="ot">&lt;-</span><span class="fu">as.formula</span>(<span class="fu">paste</span>(dep_var, <span class="fu">paste</span>(controles3, <span class="at">collapse=</span> <span class="st">"+"</span>), <span class="at">sep=</span><span class="st">"~"</span>))</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>formula3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>rel_07 ~ kc_phase1 + provs1 + provs2 + provs3 + provs4 + provs5 + 
+    provs6 + provs7 + provs8 + provs9 + provs10 + provs11 + provs12 + 
+    provs13 + provs14 + provs15 + provs16 + provs17 + provs18 + 
+    provs19 + provs20 + provs21 + provs22 + provs23 + provs24 + 
+    provs25 + provs26 + provs27 + provs29 + provs30 + provs31 + 
+    provs32 + provs33 + provs34 + provs35 + provs36 + provs37 + 
+    provs38 + provs39 + provs40 + provs41 + poverty_nscb + log_pop + 
+    as.factor(urban) + tax_growth_avg_3yr + as.factor(term3_04) + 
+    contenders_07 + as.factor(dynasty_04)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>modelo3<span class="ot">&lt;-</span><span class="fu">glm</span>(formula3, <span class="at">family=</span><span class="fu">binomial</span>(<span class="at">link=</span><span class="st">"logit"</span>), <span class="at">data=</span>db,</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="at">subset=</span> <span class="sc">!</span><span class="fu">is.na</span>(prov_geocode))</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>robust_se3<span class="ot">&lt;-</span><span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovCL</span>(modelo3, <span class="at">type=</span><span class="st">"HC0"</span>, <span class="at">cluster =</span><span class="sc">~</span>prov_geocode)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>##Resultados modelos 1, 2 y 3</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(modelo1, modelo2, modelo3, <span class="at">apply.coef=</span>exp, <span class="at">type =</span> <span class="st">"text"</span>,</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="at">se =</span> <span class="fu">list</span>(<span class="cn">NULL</span>, robust_se1, robust_se2, robust_se3),</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="at">omit=</span><span class="st">"provs"</span>, <span class="at">omit.labels=</span><span class="st">"Province FE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+====================================================
+                            Dependent variable:     
+                       -----------------------------
+                                  rel_07            
+                          (1)       (2)       (3)   
+----------------------------------------------------
+kc_phase1              1.745***  1.632***  1.687*** 
+                        (0.214)   (0.246)   (0.237) 
+                                                    
+poverty_nscb                       0.975     1.167  
+                                            (0.852) 
+                                                    
+log_pop                            1.128   1.376*** 
+                                            (0.137) 
+                                                    
+as.factor(urban)1                  0.707    0.744*  
+                                            (0.424) 
+                                                    
+tax_growth_avg_3yr                 0.719    0.799** 
+                                            (0.316) 
+                                                    
+as.factor(term3_04)1                         0.164  
+                                                    
+                                                    
+contenders_07                                0.578  
+                                                    
+                                                    
+as.factor(dynasty_04)1                       2.245  
+                                                    
+                                                    
+Constant                 0.783   0.324***    0.273  
+                        (0.522)   (0.049)   (1.612) 
+                                                    
+----------------------------------------------------
+Province FE               Yes       Yes       Yes   
+----------------------------------------------------
+Observations              661       617       610   
+Log Likelihood         -391.585  -365.005  -314.531 
+Akaike Inf. Crit.       859.169   812.010   717.062 
+====================================================
+Note:                    *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(db, <span class="fu">aes</span>(<span class="at">x=</span>kc_phase1, <span class="at">y=</span>rel_07)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>      <span class="fu">stat_smooth</span>(<span class="at">method=</span><span class="st">"glm"</span>, <span class="at">color=</span><span class="st">"green"</span>, <span class="at">se=</span><span class="cn">TRUE</span>,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">family=</span>binomial))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula 'y ~ x'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 38 rows containing non-finite values (stat_smooth).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 38 rows containing missing values (geom_point).</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Para saber la probabilidad de un fenómeno</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>faraway<span class="sc">::</span><span class="fu">ilogit</span>(modelo3<span class="sc">$</span>coefficients)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           (Intercept)              kc_phase1                 provs1 
+          2.145124e-01           6.278991e-01           8.684090e-01 
+                provs2                 provs3                 provs4 
+          6.857634e-01           7.068415e-01           4.892747e-01 
+                provs5                 provs6                 provs7 
+          3.940468e-01           6.070255e-01           7.144185e-01 
+                provs8                 provs9                provs10 
+          3.938094e-01           1.184895e-07           6.464969e-01 
+               provs11                provs12                provs13 
+          2.573898e-01           5.666163e-01           4.435932e-01 
+               provs14                provs15                provs16 
+          4.543103e-01           5.339433e-01           5.827792e-02 
+               provs17                provs18                provs19 
+                    NA                     NA                     NA 
+               provs20                provs21                provs22 
+          2.019905e-01                     NA           8.380143e-01 
+               provs23                provs24                provs25 
+          3.839321e-01           5.033252e-01           7.320325e-01 
+               provs26                provs27                provs29 
+          7.250902e-01           3.954557e-01           4.845050e-01 
+               provs30                provs31                provs32 
+          1.559196e-01           7.757689e-01           6.724682e-01 
+               provs33                provs34                provs35 
+          9.999999e-01           5.671454e-01                     NA 
+               provs36                provs37                provs38 
+          7.085765e-01           4.837145e-01           6.443962e-01 
+               provs39                provs40                provs41 
+          7.042598e-01           6.763224e-01           6.933323e-01 
+          poverty_nscb                log_pop      as.factor(urban)1 
+          5.384861e-01           5.791845e-01           4.265079e-01 
+    tax_growth_avg_3yr   as.factor(term3_04)1          contenders_07 
+          4.442786e-01           1.407010e-01           3.663154e-01 
+as.factor(dynasty_04)1 
+          6.918599e-01 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="do">##variable de interés</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>faraway<span class="sc">::</span><span class="fu">ilogit</span>(<span class="fu">coef</span>(modelo3)[<span class="dv">2</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>kc_phase1 
+0.6278991 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Intercepto, si los valores de los demás son 0</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>faraway<span class="sc">::</span><span class="fu">ilogit</span>(<span class="fu">coef</span>(modelo3)[<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept) 
+  0.2145124 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co">#para extraer el odds ratio de esa variable de interés</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">coef</span>(modelo3)[<span class="dv">2</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>kc_phase1 
+ 1.687443 </code></pre>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
